@@ -12,7 +12,7 @@ required_files=(
 # Runtime command probes are intentionally executable-focused rather than package
 # name-focused: doctor can run both before and after install, and users may
 # satisfy runtime commands through equivalent packages on derivative Fedora setups.
-runtime_cmds=(hyprland waybar wofi mako nm-applet)
+runtime_cmds=(Hyprland waybar wofi mako nm-applet)
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
