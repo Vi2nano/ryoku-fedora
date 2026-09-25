@@ -1,0 +1,40 @@
+# Core desktop/session
+hyprland
+waybar
+wofi
+mako
+swaybg
+
+# Wayland + desktop portals
+xdg-desktop-portal
+xdg-desktop-portal-hyprland
+wl-clipboard
+wayland-utils
+
+# Audio + media session
+pipewire
+wireplumber
+pipewire-pulseaudio
+pavucontrol
+playerctl
+
+# Brightness / backlight / power helpers
+brightnessctl
+upower
+
+# Networking
+network-manager-applet
+nm-connection-editor
+
+# Basic utilities/apps
+kitty
+thunar
+gvfs
+
+# Fonts
+google-noto-sans-fonts
+google-noto-emoji-fonts
+fira-code-fonts
+
+# Policy/notifications integration
+polkit

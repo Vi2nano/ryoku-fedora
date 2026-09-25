@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Ryoku Fedora (Hyprland)
+Comment=Ryoku-inspired Fedora session on Hyprland
+Exec=Hyprland
+Type=Application
+DesktopNames=Hyprland;RyokuFedora
+Keywords=wayland;hyprland;ryoku;fedora;
