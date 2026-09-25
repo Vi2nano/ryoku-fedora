@@ -11,6 +11,7 @@ required_files=(
   "fedora/packages-optional.txt"
   "ryoku/hypr/hyprland.conf"
   "ryoku/session/ryoku-fedora.desktop"
+  "ryoku/session/session-launch.sh"
   "scripts/install.sh"
   "scripts/update.sh"
   "scripts/doctor.sh"
@@ -31,6 +32,11 @@ done
 
 if grep -RIEq '(pacman|yay|pacstrap|limine)' "$REPO_ROOT/ryoku/hypr"; then
   echo "arch-only token found in hypr config" >&2
+  exit 1
+fi
+
+if grep -RIEq '(pacman|yay|pacstrap|limine)' "$REPO_ROOT/ryoku/session" "$REPO_ROOT/scripts/install.sh" "$REPO_ROOT/scripts/install-deps.sh" "$REPO_ROOT/scripts/update.sh" "$REPO_ROOT/scripts/materialize.sh"; then
+  echo "arch-only token found in Fedora runtime scripts/session files" >&2
   exit 1
 fi
 

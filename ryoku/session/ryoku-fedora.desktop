@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Ryoku Fedora (Hyprland)
 Comment=Ryoku-inspired Fedora session on Hyprland
-Exec=Hyprland
+Exec=/usr/bin/env bash -lc '~/.local/share/ryoku-fedora/bin/session-launch.sh'
 Type=Application
 DesktopNames=Hyprland;RyokuFedora
 Keywords=wayland;hyprland;ryoku;fedora;

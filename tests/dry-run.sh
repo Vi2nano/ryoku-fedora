@@ -33,7 +33,16 @@ echo "dnf5 $*"
 EOF_D
 chmod +x "$tmp_home/bin/dnf5"
 
-output_install="$(HOME="$tmp_home" XDG_CONFIG_HOME="$tmp_home/.config" XDG_DATA_HOME="$tmp_home/.local/share" PATH="$tmp_home/bin:$PATH" RYOKU_OS_RELEASE_PATH="$tmp_home/os-release" "$REPO_ROOT/scripts/install.sh" --dry-run 2>&1)"
+run_install() {
+  HOME="$tmp_home" \
+  XDG_CONFIG_HOME="$tmp_home/.config" \
+  XDG_DATA_HOME="$tmp_home/.local/share" \
+  PATH="$tmp_home/bin:$PATH" \
+  RYOKU_OS_RELEASE_PATH="$tmp_home/os-release" \
+  "$REPO_ROOT/scripts/install.sh" "$@" 2>&1
+}
+
+output_install="$(run_install --dry-run)"
 
 echo "$output_install" | grep -q '\[DRY-RUN\] sudo dnf5 install -y' || {
   echo "expected dnf5 dry-run output not found" >&2
@@ -45,14 +54,14 @@ echo "$output_install" | grep -q '\[DRY-RUN\] ln -sfn' || {
   exit 1
 }
 
-output_install_optional="$(HOME="$tmp_home" XDG_CONFIG_HOME="$tmp_home/.config" XDG_DATA_HOME="$tmp_home/.local/share" PATH="$tmp_home/bin:$PATH" RYOKU_OS_RELEASE_PATH="$tmp_home/os-release" "$REPO_ROOT/scripts/install.sh" --dry-run --with-optional 2>&1)"
+output_install_optional="$(run_install --dry-run --with-optional)"
 
 echo "$output_install_optional" | grep -q 'quickshell' || {
   echo "expected optional package in dry-run output not found" >&2
   exit 1
 }
 
-output_uninstall="$(HOME="$tmp_home" XDG_CONFIG_HOME="$tmp_home/.config" XDG_DATA_HOME="$tmp_home/.local/share" PATH="$tmp_home/bin:$PATH" RYOKU_OS_RELEASE_PATH="$tmp_home/os-release" "$REPO_ROOT/scripts/install.sh" --dry-run --uninstall 2>&1)"
+output_uninstall="$(run_install --dry-run --uninstall)"
 
 echo "$output_uninstall" | grep -q 'Uninstalling ryoku-fedora user-space layer' || {
   echo "expected uninstall message not found" >&2
