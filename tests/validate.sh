@@ -45,8 +45,8 @@ if find "$REPO_ROOT/ryoku" -type f \( -iname '*.png' -o -iname '*.jpg' -o -iname
   exit 1
 fi
 
-if grep -RIEq "https?://[^[:space:]]+\\.(png|jpe?g|webp|gif|svg)(([?#][^[:space:]]*)|)([[:space:]\"'),>;]|$)" "$REPO_ROOT/ryoku" "$REPO_ROOT/scripts"; then
-  echo "remote image URL detected in runtime files" >&2
+if grep -RIEq 'https?://[^[:space:]]+' "$REPO_ROOT/ryoku" "$REPO_ROOT/scripts"; then
+  echo "remote URL detected in runtime files; keep runtime assets local only" >&2
   exit 1
 fi
 
