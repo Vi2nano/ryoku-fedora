@@ -90,6 +90,7 @@ deploy() {
 
   local target_cfg="${xdg_config}/ryoku-fedora"
   local target_hypr="${xdg_config}/hypr/hyprland.conf"
+  local expected_hypr_target="${target_cfg}/hypr/hyprland.conf"
   local target_data="${xdg_data}/ryoku-fedora"
   local target_session_dir="${xdg_data}/wayland-sessions"
   local target_session="${target_session_dir}/ryoku-fedora.desktop"
@@ -110,9 +111,16 @@ deploy() {
 
   install_user_overrides_file "${xdg_config}/hypr"
 
-  if [[ ! -L "$target_hypr" ]]; then
+  if [[ -L "$target_hypr" ]]; then
+    local link_target
+    link_target="$(readlink "$target_hypr" || true)"
+    if [[ "$link_target" != "$expected_hypr_target" ]]; then
+      backup_file "$target_hypr"
+      run ln -sfn "$expected_hypr_target" "$target_hypr"
+    fi
+  else
     backup_file "$target_hypr"
-    run ln -sfn "$target_cfg/hypr/hyprland.conf" "$target_hypr"
+    run ln -sfn "$expected_hypr_target" "$target_hypr"
   fi
 }
 

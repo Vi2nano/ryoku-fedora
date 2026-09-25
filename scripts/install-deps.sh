@@ -45,7 +45,14 @@ if [[ ! -f "$REQUIRED_MANIFEST" ]]; then
 fi
 
 mapfile -t REQUIRED_PACKAGES < <(grep -Ev '^(#|$)' "$REQUIRED_MANIFEST")
-mapfile -t OPTIONAL_PACKAGES < <(grep -Ev '^(#|$)' "$OPTIONAL_MANIFEST")
+OPTIONAL_PACKAGES=()
+if (( INCLUDE_OPTIONAL )); then
+  if [[ ! -f "$OPTIONAL_MANIFEST" ]]; then
+    echo "Missing optional manifest: $OPTIONAL_MANIFEST" >&2
+    exit 1
+  fi
+  mapfile -t OPTIONAL_PACKAGES < <(grep -Ev '^(#|$)' "$OPTIONAL_MANIFEST")
+fi
 
 if (( INCLUDE_OPTIONAL )); then
   PACKAGES=("${REQUIRED_PACKAGES[@]}" "${OPTIONAL_PACKAGES[@]}")
