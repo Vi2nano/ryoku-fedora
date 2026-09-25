@@ -42,7 +42,6 @@ assert_file "$tmp_home/.local/share/wayland-sessions/ryoku-fedora.desktop"
 echo "stale" > "$tmp_home/.config/ryoku-fedora/waybar/stale.conf"
 echo "stale" > "$tmp_home/.config/ryoku-fedora/mako/stale.conf"
 echo "stale" > "$tmp_home/.config/ryoku-fedora/wofi/stale.conf"
-echo "stale" > "$tmp_home/.local/share/ryoku-fedora/bin/stale-helper"
 HOME="$tmp_home" \
 XDG_CONFIG_HOME="$tmp_home/.config" \
 XDG_DATA_HOME="$tmp_home/.local/share" \
@@ -59,8 +58,8 @@ XDG_DATA_HOME="$tmp_home/.local/share" \
   echo "stale wofi file should be replaced by materialize" >&2
   exit 1
 }
-[[ ! -e "$tmp_home/.local/share/ryoku-fedora/bin/stale-helper" ]] || {
-  echo "stale bin helper should be replaced by materialize" >&2
+grep -Fxq 'Exec=Hyprland' "$tmp_home/.local/share/wayland-sessions/ryoku-fedora.desktop" || {
+  echo "session desktop entry should keep Hyprland Exec line" >&2
   exit 1
 }
 

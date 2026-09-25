@@ -36,6 +36,7 @@ start_if_missing() {
   shift
   pgrep -u "$USER" -f "$match" >/dev/null 2>&1 && return 0
   "$@" >>"$startup_log" 2>&1 &
+  local pid=$!
   while (( tries > 0 )); do
     if pgrep -u "$USER" -f "$match" >/dev/null 2>&1; then
       return 0
@@ -43,7 +44,13 @@ start_if_missing() {
     sleep 0.2
     (( tries-- ))
   done
-  printf '[warn] failed to start %s\n' "$label" >>"$startup_log"
+  local status=1
+  if wait "$pid"; then
+    status=0
+  else
+    status=$?
+  fi
+  printf '[warn] failed to start %s (pid=%s exit=%s)\n' "$label" "$pid" "$status" >>"$startup_log"
 }
 
 if command -v mako >/dev/null 2>&1; then
@@ -55,7 +62,7 @@ if command -v waybar >/dev/null 2>&1; then
 fi
 
 if command -v nm-applet >/dev/null 2>&1; then
-  start_if_missing '^nm-applet($| )' nm-applet nm-applet --indicator
+  start_if_missing '^nm-applet($| )' nm-applet nm-applet
 fi
 
 if command -v quickshell >/dev/null 2>&1; then
