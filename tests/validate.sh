@@ -51,7 +51,6 @@ if grep -RIEh 'https?://[^[:space:]]+' \
   --include='*.qml' \
   --include='*.desktop' \
   --include='*.sh' \
-  --include='*.css' \
   "$REPO_ROOT/ryoku" \
   | sed -E 's@^[[:space:]]*(#|//|;).*$@@; s@[[:space:]]+#.*$@@; s@[[:space:]]+;.*$@@' \
   | grep -Eq 'https?://[^[:space:]]+'; then

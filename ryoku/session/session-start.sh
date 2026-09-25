@@ -27,14 +27,19 @@ startup_log="${state_dir}/session-start.log"
 start_if_missing() {
   local match="$1"
   local label="$2"
+  local tries=10
   shift
   shift
   pgrep -u "$USER" -f "$match" >/dev/null 2>&1 && return 0
   "$@" >>"$startup_log" 2>&1 &
-  sleep 0.2
-  if ! pgrep -u "$USER" -f "$match" >/dev/null 2>&1; then
-    printf '[warn] failed to start %s\n' "$label" >>"$startup_log"
-  fi
+  while (( tries > 0 )); do
+    if pgrep -u "$USER" -f "$match" >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 0.2
+    (( tries-- ))
+  done
+  printf '[warn] failed to start %s\n' "$label" >>"$startup_log"
 }
 
 if command -v mako >/dev/null 2>&1; then
