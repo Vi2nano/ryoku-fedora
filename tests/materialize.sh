@@ -29,7 +29,10 @@ assert_exec() {
 }
 
 assert_file "$tmp_home/.config/ryoku-fedora/hypr/hyprland.conf"
+assert_file "$tmp_home/.config/ryoku-fedora/theme/palette.conf"
+assert_file "$tmp_home/.config/ryoku-fedora/shell/main.qml"
 assert_file "$tmp_home/.config/ryoku-fedora/waybar/config.jsonc"
+assert_file "$tmp_home/.config/ryoku-fedora/waybar/style.css"
 assert_file "$tmp_home/.config/ryoku-fedora/mako/config"
 assert_file "$tmp_home/.config/ryoku-fedora/wofi/config"
 assert_exec "$tmp_home/.local/share/ryoku-fedora/bin/session-start.sh"

@@ -42,9 +42,5 @@ run cp -a "$REPO_ROOT/ryoku/mako" "$TARGET_CONFIG_DIR/"
 run cp -a "$REPO_ROOT/ryoku/wofi" "$TARGET_CONFIG_DIR/"
 run cp -a "$REPO_ROOT/ryoku/session/session-start.sh" "$TARGET_BIN_DIR/session-start.sh"
 run cp -a "$REPO_ROOT/ryoku/bin/." "$TARGET_BIN_DIR/"
-run chmod +x "$TARGET_BIN_DIR/session-start.sh"
-for script in "$REPO_ROOT/ryoku/bin/"*; do
-  [[ -f "$script" ]] || continue
-  run chmod +x "$TARGET_BIN_DIR/${script##*/}"
-done
+run find "$TARGET_BIN_DIR" -type f -exec chmod +x {} +
 run cp -a "$REPO_ROOT/ryoku/session/ryoku-fedora.desktop" "$TARGET_SESSION_DIR/ryoku-fedora.desktop"
