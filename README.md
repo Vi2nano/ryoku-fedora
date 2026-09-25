@@ -14,6 +14,7 @@
 - Fedora package manifests (required + optional)
 - Safe user-space install/uninstall/update/materialize scripts
 - Modular project-owned Hyprland configuration with user override entrypoints
+- Fedora-adapted launcher/session helpers (`ryoku-app`, Waybar/Mako/Wofi runtime bootstrap)
 - Initial theme integration points (palette + hooks), without bundling upstream copyrighted art
 - Validation checks and CI for shell scripts and repository invariants
 
@@ -27,7 +28,14 @@
 
 ## Upstream and licensing
 
-This repository is an original Fedora port foundation. Where upstream Ryoku material is reused in future changes, GPL-3.0 obligations and attribution are preserved. See [NOTICE](NOTICE).
+This repository is an original Fedora port foundation with selectively adapted GPL-3.0 code/config from `Ryoku-dev/ryoku` where Fedora-compatible.
+
+Licensing guardrails for this repository:
+
+- Only code/configuration with clear redistribution rights is copied/adapted.
+- No uncertain/proprietary/trademarked artwork packs, logos, wallpapers, or external image hotlinks are bundled.
+- Runtime files intentionally avoid remote image fetch URLs.
+- File-level provenance for reused upstream portions is tracked in [NOTICE](NOTICE).
 
 ## Fedora assumptions
 
@@ -108,5 +116,6 @@ scripts/install.sh --dry-run --uninstall
 ## Current limitations
 
 - Full upstream Ryoku shell behavior is **not** ported yet.
-- Session launcher currently provides a safe startup hook + placeholder shell command path.
+- Quickshell integration remains optional and currently uses a placeholder `main.qml`; Fedora bootstrap uses practical user-space defaults (Waybar/Mako/Wofi + Hyprland bindings) while upstream parity is incremental.
 - Theme assets are starter originals/integration points, not full upstream art/theme packs.
+- Upstream visual assets with unclear licensing/trademark status are intentionally excluded.

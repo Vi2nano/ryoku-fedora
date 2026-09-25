@@ -20,11 +20,55 @@ wait_for_service pipewire.service || true
 wait_for_service wireplumber.service || true
 wait_for_service xdg-desktop-portal.service || true
 
-if pgrep -u "$USER" -f 'quickshell .*ryoku-fedora' >/dev/null 2>&1; then
-  exit 0
+start_lock="${XDG_RUNTIME_DIR:-/tmp}/ryoku-fedora-session-start.lock"
+exec 9>"$start_lock"
+flock -n 9 || exit 0
+
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/ryoku-fedora"
+mkdir -p "$state_dir"
+startup_log="${state_dir}/session-start.log"
+
+start_if_missing() {
+  local match="$1"
+  local label="$2"
+  local tries=10
+  shift
+  shift
+  pgrep -u "$USER" -f "$match" >/dev/null 2>&1 && return 0
+  "$@" >>"$startup_log" 2>&1 &
+  local pid=$!
+  while (( tries > 0 )); do
+    if pgrep -u "$USER" -f "$match" >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 0.2
+    (( tries-- ))
+  done
+  local status=1
+  if wait "$pid"; then
+    status=0
+  else
+    status=$?
+  fi
+  printf '[warn] failed to start %s (pid=%s exit=%s)\n' "$label" "$pid" "$status" >>"$startup_log"
+}
+
+if command -v mako >/dev/null 2>&1; then
+  start_if_missing '^mako($| )' mako mako --config "$HOME/.config/ryoku-fedora/mako/config"
+fi
+
+if command -v waybar >/dev/null 2>&1; then
+  start_if_missing '^waybar($| )' waybar waybar -c "$HOME/.config/ryoku-fedora/waybar/config.jsonc" -s "$HOME/.config/ryoku-fedora/waybar/style.css"
+fi
+
+if command -v nm-applet >/dev/null 2>&1; then
+  start_if_missing '^nm-applet($| )' nm-applet nm-applet
 fi
 
 if command -v quickshell >/dev/null 2>&1; then
+  if pgrep -u "$USER" -f 'quickshell .*ryoku-fedora' >/dev/null 2>&1; then
+    exit 0
+  fi
   exec quickshell --path "$HOME/.config/ryoku-fedora/shell/main.qml" --identifier ryoku-fedora
 fi
 
