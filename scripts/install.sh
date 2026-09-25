@@ -167,7 +167,10 @@ remove_installation() {
     if (( DRY_RUN )); then
       echo "[DRY-RUN] remove include from $target_hypr_main"
     else
-      sed -i "\|^${include_line}$|d" "$target_hypr_main"
+      local tmp_file
+      tmp_file="$(mktemp)"
+      grep -Fxv "$include_line" "$target_hypr_main" > "$tmp_file" || true
+      mv "$tmp_file" "$target_hypr_main"
     fi
   fi
 

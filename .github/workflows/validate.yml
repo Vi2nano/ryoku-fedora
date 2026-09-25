@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install dependencies
-        run: dnf install -y bash findutils grep sed gawk coreutils shellcheck
+        run: dnf install -y bash findutils grep sed gawk coreutils shellcheck procps-ng systemd
 
       - name: Run validations
         run: tests/run.sh
