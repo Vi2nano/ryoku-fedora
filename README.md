@@ -44,14 +44,60 @@ This repository is an original Fedora port foundation. Where upstream Ryoku mate
 - `tests/` — validation checks used locally and in CI
 - `.github/workflows/` — CI workflow
 
-## Development workflow
+## Installation
 
-1. Edit manifests/config/scripts.
-2. Run `tests/run.sh`.
-3. Validate install plan safely using dry-run:
-   - `scripts/install.sh --dry-run`
-   - `scripts/install.sh --dry-run --uninstall`
-4. Iterate before any real install.
+Clone the repository and run the installer on an already-configured Fedora system:
+
+```bash
+git clone https://github.com/Vi2nano/ryoku-fedora.git
+cd ryoku-fedora
+```
+
+### Verify your system
+
+Before installing, check that your system meets requirements:
+
+```bash
+scripts/doctor.sh
+```
+
+### Dry-run installation
+
+Preview what the installer will do without making changes:
+
+```bash
+scripts/install.sh --dry-run
+```
+
+### Install
+
+Install the Ryoku Fedora layer to user-space XDG paths:
+
+```bash
+scripts/install.sh
+```
+
+Install with optional packages:
+
+```bash
+scripts/install.sh --with-optional
+```
+
+After installation, re-login and select **"Ryoku Fedora (Hyprland)"** from your display manager's session menu.
+
+### Uninstall
+
+Remove the Ryoku Fedora layer and restore previous configurations:
+
+```bash
+scripts/install.sh --uninstall
+```
+
+Preview uninstall before running:
+
+```bash
+scripts/install.sh --dry-run --uninstall
+```
 
 ## Installation warnings
 
