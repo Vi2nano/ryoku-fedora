@@ -2,7 +2,6 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 
 DRY_RUN=0
 DO_UNINSTALL=0
@@ -98,19 +97,13 @@ deploy() {
   local target_session_dir="${xdg_data}/wayland-sessions"
   local target_session="${target_session_dir}/ryoku-fedora.desktop"
 
-  run mkdir -p "$target_cfg" "$target_data/bin" "$target_session_dir" "$hypr_dir"
+  run mkdir -p "$hypr_dir" "$target_session_dir"
 
   backup_file "$target_session"
 
-  run rm -rf "$target_cfg/hypr" "$target_cfg/theme" "$target_cfg/shell"
-  run cp -a "$REPO_ROOT/ryoku/hypr" "$target_cfg/"
-  run cp -a "$REPO_ROOT/ryoku/theme" "$target_cfg/"
-  run cp -a "$REPO_ROOT/ryoku/shell" "$target_cfg/"
-
-  run cp -a "$REPO_ROOT/ryoku/session/session-start.sh" "$target_data/bin/session-start.sh"
-  run chmod +x "$target_data/bin/session-start.sh"
-
-  run cp -a "$REPO_ROOT/ryoku/session/ryoku-fedora.desktop" "$target_session"
+  local materialize_args=()
+  (( DRY_RUN )) && materialize_args+=("--dry-run")
+  "$SCRIPT_DIR/materialize.sh" "${materialize_args[@]}"
 
   install_user_overrides_file "$hypr_dir"
 
@@ -167,10 +160,7 @@ remove_installation() {
     if (( DRY_RUN )); then
       echo "[DRY-RUN] remove include from $target_hypr_main"
     else
-      local tmp_file
-      tmp_file="$(mktemp)"
-      grep -Fxv "$include_line" "$target_hypr_main" > "$tmp_file" || true
-      mv "$tmp_file" "$target_hypr_main"
+      sed -i '\|^source = ~/.config/hypr/ryoku-fedora\.conf$|d' "$target_hypr_main"
     fi
   fi
 
