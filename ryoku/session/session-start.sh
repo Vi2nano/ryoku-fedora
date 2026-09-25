@@ -32,7 +32,7 @@ if command -v mako >/dev/null 2>&1; then
 fi
 
 if command -v waybar >/dev/null 2>&1; then
-  start_if_missing 'waybar .*ryoku-fedora/waybar/config.jsonc' waybar -c "$HOME/.config/ryoku-fedora/waybar/config.jsonc" -s "$HOME/.config/ryoku-fedora/waybar/style.css"
+  start_if_missing '^waybar($| )' waybar -c "$HOME/.config/ryoku-fedora/waybar/config.jsonc" -s "$HOME/.config/ryoku-fedora/waybar/style.css"
 fi
 
 if command -v nm-applet >/dev/null 2>&1; then
