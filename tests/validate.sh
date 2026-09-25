@@ -52,7 +52,9 @@ if grep -RIEh 'https?://[^[:space:]]+' \
   --include='*.desktop' \
   --include='*.sh' \
   --include='*.css' \
-  "$REPO_ROOT/ryoku" | grep -Ev '^[[:space:]]*(#|//|;)' | grep -q .; then
+  "$REPO_ROOT/ryoku" \
+  | sed -E 's@^[[:space:]]*(#|//|;).*$@@; s@[[:space:]]+#.*$@@; s@[[:space:]]+;.*$@@' \
+  | grep -Eq 'https?://[^[:space:]]+'; then
   echo "remote URL detected in runtime files; keep runtime assets local only" >&2
   exit 1
 fi

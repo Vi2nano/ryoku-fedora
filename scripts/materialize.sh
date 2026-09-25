@@ -43,8 +43,5 @@ run cp -a "$REPO_ROOT/ryoku/wofi" "$TARGET_CONFIG_DIR/"
 run cp -a "$REPO_ROOT/ryoku/session/session-start.sh" "$TARGET_BIN_DIR/session-start.sh"
 run cp -a "$REPO_ROOT/ryoku/bin/." "$TARGET_BIN_DIR/"
 run chmod +x "$TARGET_BIN_DIR/session-start.sh"
-while IFS= read -r -d '' src; do
-  rel="${src#"$REPO_ROOT/ryoku/bin/"}"
-  run chmod +x "$TARGET_BIN_DIR/$rel"
-done < <(find "$REPO_ROOT/ryoku/bin" -type f -print0)
+run chmod +x "$TARGET_BIN_DIR/ryoku-app"
 run cp -a "$REPO_ROOT/ryoku/session/ryoku-fedora.desktop" "$TARGET_SESSION_DIR/ryoku-fedora.desktop"
