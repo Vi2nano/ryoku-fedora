@@ -33,30 +33,60 @@ echo "dnf5 $*"
 EOF_D
 chmod +x "$tmp_home/bin/dnf5"
 
-output_install="$(HOME="$tmp_home" XDG_CONFIG_HOME="$tmp_home/.config" XDG_DATA_HOME="$tmp_home/.local/share" PATH="$tmp_home/bin:$PATH" RYOKU_OS_RELEASE_PATH="$tmp_home/os-release" "$REPO_ROOT/scripts/install.sh" --dry-run 2>&1)"
+cat > "$tmp_home/bin/dnf" <<'EOF_DNF'
+#!/usr/bin/env bash
+echo "dnf $*"
+EOF_DNF
+chmod +x "$tmp_home/bin/dnf"
 
-echo "$output_install" | grep -q '\[DRY-RUN\] sudo dnf5 install -y' || {
-  echo "expected dnf5 dry-run output not found" >&2
-  exit 1
+mkdir -p "$tmp_home/bin-dnf-only"
+ln -s /usr/bin/bash "$tmp_home/bin-dnf-only/bash"
+ln -s /usr/bin/dirname "$tmp_home/bin-dnf-only/dirname"
+ln -s /usr/bin/grep "$tmp_home/bin-dnf-only/grep"
+ln -s "$tmp_home/bin/uname" "$tmp_home/bin-dnf-only/uname"
+ln -s "$tmp_home/bin/sudo" "$tmp_home/bin-dnf-only/sudo"
+ln -s "$tmp_home/bin/dnf" "$tmp_home/bin-dnf-only/dnf"
+
+run_install() {
+  local path_value="$1"
+  shift
+
+  HOME="$tmp_home" \
+    XDG_CONFIG_HOME="$tmp_home/.config" \
+    XDG_DATA_HOME="$tmp_home/.local/share" \
+    PATH="$path_value" \
+    RYOKU_OS_RELEASE_PATH="$tmp_home/os-release" \
+    "$REPO_ROOT/scripts/install.sh" "$@" 2>&1
 }
 
-echo "$output_install" | grep -q '\[DRY-RUN\] ln -sfn' || {
-  echo "expected symlink dry-run output not found" >&2
-  exit 1
+assert_contains() {
+  local haystack="$1"
+  local needle="$2"
+  local message="$3"
+
+  grep -Fq "$needle" <<<"$haystack" || {
+    echo "$message" >&2
+    exit 1
+  }
 }
 
-output_install_optional="$(HOME="$tmp_home" XDG_CONFIG_HOME="$tmp_home/.config" XDG_DATA_HOME="$tmp_home/.local/share" PATH="$tmp_home/bin:$PATH" RYOKU_OS_RELEASE_PATH="$tmp_home/os-release" "$REPO_ROOT/scripts/install.sh" --dry-run --with-optional 2>&1)"
+output_install="$(run_install "$tmp_home/bin:$PATH" --dry-run)"
 
-echo "$output_install_optional" | grep -q 'quickshell' || {
-  echo "expected optional package in dry-run output not found" >&2
-  exit 1
-}
+assert_contains "$output_install" '[DRY-RUN] sudo dnf5 install -y' "expected dnf5 dry-run output not found"
+assert_contains "$output_install" '[DRY-RUN] ln -sfn' "expected symlink dry-run output not found"
 
-output_uninstall="$(HOME="$tmp_home" XDG_CONFIG_HOME="$tmp_home/.config" XDG_DATA_HOME="$tmp_home/.local/share" PATH="$tmp_home/bin:$PATH" RYOKU_OS_RELEASE_PATH="$tmp_home/os-release" "$REPO_ROOT/scripts/install.sh" --dry-run --uninstall 2>&1)"
+output_install_fallback="$(run_install "$tmp_home/bin-dnf-only" --dry-run)"
 
-echo "$output_uninstall" | grep -q 'Uninstalling ryoku-fedora user-space layer' || {
-  echo "expected uninstall message not found" >&2
-  exit 1
-}
+assert_contains "$output_install_fallback" '[DRY-RUN] sudo dnf install -y' "expected dnf fallback dry-run output not found"
+
+output_install_optional="$(run_install "$tmp_home/bin:$PATH" --dry-run --with-optional)"
+
+assert_contains "$output_install_optional" 'quickshell' "expected optional package in dry-run output not found"
+
+output_uninstall="$(run_install "$tmp_home/bin:$PATH" --dry-run --uninstall)"
+
+assert_contains "$output_uninstall" 'Uninstalling ryoku-fedora user-space layer' "expected uninstall message not found"
+assert_contains "$output_uninstall" '[DRY-RUN] rm -f' "expected uninstall session cleanup plan not found"
+assert_contains "$output_uninstall" '[DRY-RUN] rm -rf' "expected uninstall data cleanup plan not found"
 
 echo "dry-run.sh: ok"

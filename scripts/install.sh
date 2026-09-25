@@ -51,7 +51,7 @@ require_platform() {
     exit 1
   fi
 
-  if [[ "${EUID}" -eq 0 ]]; then
+  if [[ "${EUID}" -eq 0 ]] && (( ! DRY_RUN )); then
     echo "Run as a regular user; sudo will be used when required." >&2
     exit 1
   fi
