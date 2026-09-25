@@ -45,6 +45,13 @@ echo "$output_install" | grep -q '\[DRY-RUN\] ln -sfn' || {
   exit 1
 }
 
+output_install_optional="$(HOME="$tmp_home" XDG_CONFIG_HOME="$tmp_home/.config" XDG_DATA_HOME="$tmp_home/.local/share" PATH="$tmp_home/bin:$PATH" RYOKU_OS_RELEASE_PATH="$tmp_home/os-release" "$REPO_ROOT/scripts/install.sh" --dry-run --with-optional 2>&1)"
+
+echo "$output_install_optional" | grep -q 'quickshell' || {
+  echo "expected optional package in dry-run output not found" >&2
+  exit 1
+}
+
 output_uninstall="$(HOME="$tmp_home" XDG_CONFIG_HOME="$tmp_home/.config" XDG_DATA_HOME="$tmp_home/.local/share" PATH="$tmp_home/bin:$PATH" RYOKU_OS_RELEASE_PATH="$tmp_home/os-release" "$REPO_ROOT/scripts/install.sh" --dry-run --uninstall 2>&1)"
 
 echo "$output_uninstall" | grep -q 'Uninstalling ryoku-fedora user-space layer' || {

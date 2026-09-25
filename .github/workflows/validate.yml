@@ -13,11 +13,11 @@ jobs:
     container:
       image: fedora:41
     steps:
-      - name: Install dependencies
-        run: dnf install -y git bash findutils grep sed gawk coreutils shellcheck
-
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: dnf install -y bash findutils grep sed gawk coreutils shellcheck
 
       - name: Run validations
         run: tests/run.sh

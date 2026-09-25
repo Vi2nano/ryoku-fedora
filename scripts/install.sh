@@ -89,17 +89,20 @@ deploy() {
   local xdg_data="${XDG_DATA_HOME:-$HOME/.local/share}"
 
   local target_cfg="${xdg_config}/ryoku-fedora"
-  local target_hypr="${xdg_config}/hypr/hyprland.conf"
-  local expected_hypr_target="${target_cfg}/hypr/hyprland.conf"
+  local hypr_dir="${xdg_config}/hypr"
+  local target_hypr_main="${hypr_dir}/hyprland.conf"
+  local target_hypr_include="${hypr_dir}/ryoku-fedora.conf"
+  local include_line="source = ~/.config/hypr/ryoku-fedora.conf"
+  local expected_include_target="${target_cfg}/hypr/hyprland.conf"
   local target_data="${xdg_data}/ryoku-fedora"
   local target_session_dir="${xdg_data}/wayland-sessions"
   local target_session="${target_session_dir}/ryoku-fedora.desktop"
 
-  run mkdir -p "$target_cfg" "$target_data/bin" "$target_session_dir"
+  run mkdir -p "$target_cfg" "$target_data/bin" "$target_session_dir" "$hypr_dir"
 
-  backup_file "$target_hypr"
   backup_file "$target_session"
 
+  run rm -rf "$target_cfg/hypr" "$target_cfg/theme" "$target_cfg/shell"
   run cp -a "$REPO_ROOT/ryoku/hypr" "$target_cfg/"
   run cp -a "$REPO_ROOT/ryoku/theme" "$target_cfg/"
   run cp -a "$REPO_ROOT/ryoku/shell" "$target_cfg/"
@@ -109,18 +112,37 @@ deploy() {
 
   run cp -a "$REPO_ROOT/ryoku/session/ryoku-fedora.desktop" "$target_session"
 
-  install_user_overrides_file "${xdg_config}/hypr"
+  install_user_overrides_file "$hypr_dir"
 
-  if [[ -L "$target_hypr" ]]; then
+  if [[ -L "$target_hypr_include" ]]; then
     local link_target
-    link_target="$(readlink "$target_hypr" || true)"
-    if [[ "$link_target" != "$expected_hypr_target" ]]; then
-      backup_file "$target_hypr"
-      run ln -sfn "$expected_hypr_target" "$target_hypr"
+    link_target="$(readlink "$target_hypr_include" || true)"
+    if [[ "$link_target" != "$expected_include_target" ]]; then
+      backup_file "$target_hypr_include"
+      run ln -sfn "$expected_include_target" "$target_hypr_include"
     fi
   else
-    backup_file "$target_hypr"
-    run ln -sfn "$expected_hypr_target" "$target_hypr"
+    backup_file "$target_hypr_include"
+    run ln -sfn "$expected_include_target" "$target_hypr_include"
+  fi
+
+  if [[ -f "$target_hypr_main" ]]; then
+    if ! grep -Fxq "$include_line" "$target_hypr_main"; then
+      backup_file "$target_hypr_main"
+      if (( DRY_RUN )); then
+        echo "[DRY-RUN] append include to $target_hypr_main"
+      else
+        printf '\n%s\n' "$include_line" >> "$target_hypr_main"
+      fi
+    fi
+  else
+    if (( DRY_RUN )); then
+      echo "[DRY-RUN] create $target_hypr_main"
+    else
+      cat > "$target_hypr_main" <<EOF
+$include_line
+EOF
+    fi
   fi
 }
 
@@ -129,15 +151,23 @@ remove_installation() {
   local xdg_data="${XDG_DATA_HOME:-$HOME/.local/share}"
 
   local target_cfg="${xdg_config}/ryoku-fedora"
-  local target_hypr="${xdg_config}/hypr/hyprland.conf"
+  local hypr_dir="${xdg_config}/hypr"
+  local target_hypr_main="${hypr_dir}/hyprland.conf"
+  local target_hypr_include="${hypr_dir}/ryoku-fedora.conf"
+  local include_line="source = ~/.config/hypr/ryoku-fedora.conf"
   local target_data="${xdg_data}/ryoku-fedora"
   local target_session="${xdg_data}/wayland-sessions/ryoku-fedora.desktop"
 
-  if [[ -L "$target_hypr" ]]; then
-    local link_target
-    link_target="$(readlink "$target_hypr" || true)"
-    if [[ "$link_target" == *"/ryoku-fedora/hypr/hyprland.conf" ]]; then
-      run rm -f "$target_hypr"
+  if [[ -L "$target_hypr_include" ]]; then
+    run rm -f "$target_hypr_include"
+  fi
+
+  if [[ -f "$target_hypr_main" ]] && grep -Fxq "$include_line" "$target_hypr_main"; then
+    backup_file "$target_hypr_main"
+    if (( DRY_RUN )); then
+      echo "[DRY-RUN] remove include from $target_hypr_main"
+    else
+      sed -i "\|^${include_line}$|d" "$target_hypr_main"
     fi
   fi
 

@@ -33,6 +33,7 @@ TARGET_BIN_DIR="${XDG_DATA_HOME}/ryoku-fedora/bin"
 TARGET_SESSION_DIR="${XDG_DATA_HOME}/wayland-sessions"
 
 run mkdir -p "$TARGET_CONFIG_DIR" "$TARGET_BIN_DIR" "$TARGET_SESSION_DIR"
+run rm -rf "$TARGET_CONFIG_DIR/hypr" "$TARGET_CONFIG_DIR/theme" "$TARGET_CONFIG_DIR/shell"
 run cp -a "$REPO_ROOT/ryoku/hypr" "$TARGET_CONFIG_DIR/"
 run cp -a "$REPO_ROOT/ryoku/theme" "$TARGET_CONFIG_DIR/"
 run cp -a "$REPO_ROOT/ryoku/shell" "$TARGET_CONFIG_DIR/"
