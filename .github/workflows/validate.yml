@@ -1,0 +1,23 @@
+name: Validate Fedora Foundation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    container:
+      image: fedora:41
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: dnf install -y bash findutils grep sed gawk coreutils shellcheck procps-ng systemd
+
+      - name: Run validations
+        run: tests/run.sh

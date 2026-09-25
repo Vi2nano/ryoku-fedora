@@ -1,0 +1,20 @@
+Ryoku Fedora Port Attribution Notice
+====================================
+
+This repository (`Vi2nano/ryoku-fedora`) is an original Fedora-focused desktop port foundation.
+
+Upstream reference project:
+- Name: Ryoku
+- Repository: https://github.com/Ryoku-dev/ryoku
+- License: GNU General Public License v3.0 (GPL-3.0)
+
+Attribution intent:
+- This project aims to integrate and/or adapt only reusable Ryoku components that are compatible
+  with GPL-3.0 obligations.
+- Arch-specific installer/repository logic (pacman/AUR/pacstrap/Limine flows) is intentionally
+  excluded from this Fedora implementation.
+- Any future direct file-level reuse from upstream should preserve original license headers,
+  copyright notices, and provenance notes.
+
+No warranty:
+- This software is provided as-is for development and testing.

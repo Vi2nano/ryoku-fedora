@@ -1,0 +1,17 @@
+# Optional shell/runtime integration
+quickshell
+
+# Optional visual tools
+hyprpaper
+hyprlock
+hypridle
+
+# Optional terminals/editors
+foot
+neovim
+
+# Optional screenshot/recording tools
+grim
+slurp
+swappy
+wf-recorder
