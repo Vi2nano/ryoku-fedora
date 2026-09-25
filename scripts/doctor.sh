@@ -9,7 +9,7 @@ required_files=(
   "scripts/install.sh"
   "scripts/install-deps.sh"
 )
-runtime_cmds=(hyprland waybar wofi mako)
+runtime_cmds=(hyprland waybar wofi mako nm-applet)
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
