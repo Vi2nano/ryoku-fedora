@@ -13,8 +13,18 @@ Attribution intent:
   with GPL-3.0 obligations.
 - Arch-specific installer/repository logic (pacman/AUR/pacstrap/Limine flows) is intentionally
   excluded from this Fedora implementation.
-- Any future direct file-level reuse from upstream should preserve original license headers,
-  copyright notices, and provenance notes.
+- Direct upstream-derived portions currently adapted in this repository are from:
+  - Upstream repository: https://github.com/Ryoku-dev/ryoku
+  - Upstream revision: 06091d40d742552e85ab0745152b4b07f6ff2201
+  - Reused/adapted areas:
+    - App role launcher logic adapted from `ryoku/shell/scripts/ryoku-app`
+    - Hyprland keybind structure adapted from `ryoku/hyprland/modules/binds.lua`
+    - Session startup sequencing ideas adapted from `ryoku/hyprland/modules/autostart.lua`
+  - Fedora-specific adaptation note:
+    - Commands, package assumptions, and paths were rewritten for Fedora user-space overlay installs.
+    - Arch-only package/install/bootstrap logic was not copied.
+    - Non-code assets (logos, wallpapers, artwork, fonts, external image URLs) with unclear
+      licensing/trademark provenance were intentionally excluded.
 
 No warranty:
 - This software is provided as-is for development and testing.

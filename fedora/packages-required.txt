@@ -30,6 +30,7 @@ nm-connection-editor
 kitty
 thunar
 gvfs
+jq
 
 # Fonts
 google-noto-sans-fonts

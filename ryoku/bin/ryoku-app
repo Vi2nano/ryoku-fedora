@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+role="${1:-}"
+[[ -n "$role" ]] || { echo "usage: ryoku-app <role> [-- <program> [arg...]]" >&2; exit 2; }
+shift
+
+inner=()
+if [[ "${1:-}" == "--" ]]; then
+  shift
+  inner=("$@")
+  [[ ${#inner[@]} -gt 0 ]] || { echo "ryoku-app: -- needs a program to run" >&2; exit 2; }
+fi
+
+unset __QUICKSHELL_CRASH_INFO_FD __QUICKSHELL_CRASH_DUMP_PID __QUICKSHELL_CRASH_DUMP_FD __QUICKSHELL_CRASH_LOG_FD __QUICKSHELL_CRASH_SIGNAL
+
+fallback() {
+  case "$1" in
+    terminal)
+      if command -v kitty >/dev/null 2>&1; then echo "kitty"; else echo "foot"; fi
+      ;;
+    files)
+      if command -v thunar >/dev/null 2>&1; then echo "thunar"; else echo "nautilus"; fi
+      ;;
+    browser)
+      if command -v firefox >/dev/null 2>&1; then echo "firefox"; else echo "chromium"; fi
+      ;;
+    editor)
+      if command -v nvim >/dev/null 2>&1; then echo "kitty -e nvim"; else echo "gedit"; fi
+      ;;
+    launcher)
+      echo "wofi --show drun --normal-window --conf ${XDG_CONFIG_HOME:-$HOME/.config}/ryoku-fedora/wofi/config"
+      ;;
+    *) echo "" ;;
+  esac
+}
+
+read_role() {
+  local file="$1" query="$2"
+  [[ -r "$file" ]] || return 0
+  command -v jq >/dev/null 2>&1 || return 0
+  jq -r --arg r "$role" "$query" "$file" 2>/dev/null || true
+}
+
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/ryoku-fedora"
+store="${config_dir}/apps.json"
+cmd="$(read_role "$store" ".apps[\$r] // empty")"
+[[ -n "$cmd" ]] || cmd="$(fallback "$role")"
+
+if [[ -z "$cmd" ]]; then
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send "Ryoku Fedora" "No app configured for role \"$role\"" || true
+  fi
+  exit 1
+fi
+
+if (( ${#inner[@]} == 0 )); then
+  exec sh -c "$cmd"
+fi
+
+read -r -a argv <<<"$cmd"
+case "${argv[0]##*/}" in
+  kitty|foot) ;;
+  wezterm) argv+=(start --) ;;
+  *) argv+=(-e) ;;
+esac
+exec "${argv[@]}" "${inner[@]}"

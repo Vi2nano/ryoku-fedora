@@ -74,6 +74,7 @@ output_install="$(run_install "$tmp_home/bin:$PATH" --dry-run)"
 
 assert_contains "$output_install" '[DRY-RUN] sudo dnf5 install -y' "expected dnf5 dry-run output not found"
 assert_contains "$output_install" '[DRY-RUN] ln -sfn' "expected symlink dry-run output not found"
+assert_contains "$output_install" 'ryoku/bin/.' "expected script materialization plan not found"
 
 output_install_fallback="$(run_install "$tmp_home/bin-dnf-only" --dry-run)"
 

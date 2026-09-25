@@ -5,9 +5,11 @@ required_cmds=(bash grep sed awk)
 required_files=(
   "fedora/packages-required.txt"
   "ryoku/hypr/hyprland.conf"
+  "ryoku/bin/ryoku-app"
   "scripts/install.sh"
   "scripts/install-deps.sh"
 )
+runtime_cmds=(hyprland waybar wofi mako)
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
@@ -41,6 +43,14 @@ for rel in "${required_files[@]}"; do
   else
     echo "[error] missing file: $rel"
     status=1
+  fi
+done
+
+for cmd in "${runtime_cmds[@]}"; do
+  if command -v "$cmd" >/dev/null 2>&1; then
+    echo "[ok] runtime command found: $cmd"
+  else
+    echo "[warn] runtime command missing (install dependencies first): $cmd"
   fi
 done
 

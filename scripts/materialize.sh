@@ -33,10 +33,18 @@ TARGET_BIN_DIR="${XDG_DATA_HOME}/ryoku-fedora/bin"
 TARGET_SESSION_DIR="${XDG_DATA_HOME}/wayland-sessions"
 
 run mkdir -p "$TARGET_CONFIG_DIR" "$TARGET_BIN_DIR" "$TARGET_SESSION_DIR"
-run rm -rf "$TARGET_CONFIG_DIR/hypr" "$TARGET_CONFIG_DIR/theme" "$TARGET_CONFIG_DIR/shell"
+run rm -rf "$TARGET_CONFIG_DIR/hypr" "$TARGET_CONFIG_DIR/theme" "$TARGET_CONFIG_DIR/shell" "$TARGET_CONFIG_DIR/waybar" "$TARGET_CONFIG_DIR/mako" "$TARGET_CONFIG_DIR/wofi"
 run cp -a "$REPO_ROOT/ryoku/hypr" "$TARGET_CONFIG_DIR/"
 run cp -a "$REPO_ROOT/ryoku/theme" "$TARGET_CONFIG_DIR/"
 run cp -a "$REPO_ROOT/ryoku/shell" "$TARGET_CONFIG_DIR/"
+run cp -a "$REPO_ROOT/ryoku/waybar" "$TARGET_CONFIG_DIR/"
+run cp -a "$REPO_ROOT/ryoku/mako" "$TARGET_CONFIG_DIR/"
+run cp -a "$REPO_ROOT/ryoku/wofi" "$TARGET_CONFIG_DIR/"
 run cp -a "$REPO_ROOT/ryoku/session/session-start.sh" "$TARGET_BIN_DIR/session-start.sh"
+run cp -a "$REPO_ROOT/ryoku/bin/." "$TARGET_BIN_DIR/"
 run chmod +x "$TARGET_BIN_DIR/session-start.sh"
+for script in "$REPO_ROOT/ryoku/bin/"*; do
+  [[ -f "$script" ]] || continue
+  run chmod +x "$TARGET_BIN_DIR/${script##*/}"
+done
 run cp -a "$REPO_ROOT/ryoku/session/ryoku-fedora.desktop" "$TARGET_SESSION_DIR/ryoku-fedora.desktop"

@@ -10,11 +10,13 @@ scripts=(
   "$REPO_ROOT/scripts/install.sh"
   "$REPO_ROOT/scripts/update.sh"
   "$REPO_ROOT/scripts/doctor.sh"
+  "$REPO_ROOT/ryoku/bin/ryoku-app"
   "$REPO_ROOT/ryoku/session/session-start.sh"
   "$REPO_ROOT/tests/run.sh"
   "$REPO_ROOT/tests/shellcheck.sh"
   "$REPO_ROOT/tests/validate.sh"
   "$REPO_ROOT/tests/dry-run.sh"
+  "$REPO_ROOT/tests/materialize.sh"
 )
 
 for file in "${scripts[@]}"; do
