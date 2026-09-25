@@ -45,15 +45,11 @@ if find "$REPO_ROOT/ryoku" -type f \( -iname '*.png' -o -iname '*.jpg' -o -iname
   exit 1
 fi
 
-if grep -RIEh 'https?://[^[:space:]]+' \
-  --include='*.conf' \
-  --include='*.jsonc' \
-  --include='*.qml' \
-  --include='*.desktop' \
-  --include='*.sh' \
-  "$REPO_ROOT/ryoku" \
-  | sed -E 's@^[[:space:]]*(#|//|;).*$@@; s@[[:space:]]+#.*$@@; s@[[:space:]]+;.*$@@' \
-  | grep -Eq 'https?://[^[:space:]]+'; then
+mapfile -d '' -t runtime_files < <(find "$REPO_ROOT/ryoku" -type f \( -name '*.conf' -o -name '*.jsonc' -o -name '*.qml' -o -name '*.desktop' -o -name '*.sh' \) -print0)
+if (( ${#runtime_files[@]} > 0 )) && \
+  grep -Eh 'https?://[^[:space:]]+' "${runtime_files[@]}" \
+    | sed -E 's@^[[:space:]]*(#|//|;).*$@@; s@[[:space:]]+#.*$@@; s@[[:space:]]+;.*$@@' \
+    | grep -Eq 'https?://[^[:space:]]+'; then
   echo "remote URL detected in runtime files; keep runtime assets local only" >&2
   exit 1
 fi
