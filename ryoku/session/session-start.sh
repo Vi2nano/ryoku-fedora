@@ -20,6 +20,10 @@ wait_for_service pipewire.service || true
 wait_for_service wireplumber.service || true
 wait_for_service xdg-desktop-portal.service || true
 
+start_lock="${XDG_RUNTIME_DIR:-/tmp}/ryoku-fedora-session-start.lock"
+exec 9>"$start_lock"
+flock -n 9 || exit 0
+
 state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/ryoku-fedora"
 mkdir -p "$state_dir"
 startup_log="${state_dir}/session-start.log"
