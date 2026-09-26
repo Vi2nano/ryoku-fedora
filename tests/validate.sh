@@ -27,7 +27,7 @@ for rel in "${required_files[@]}"; do
   [[ -f "$REPO_ROOT/$rel" ]] || { echo "missing file: $rel" >&2; exit 1; }
 done
 
-required_pkgs=(hyprland xdg-desktop-portal pipewire wireplumber mako wl-clipboard jq)
+required_pkgs=(hyprland hyprland-guiutils xdg-desktop-portal pipewire wireplumber mako wl-clipboard jq)
 for pkg in "${required_pkgs[@]}"; do
   grep -qx "$pkg" "$REPO_ROOT/fedora/packages-required.txt" || {
     echo "required package missing: $pkg" >&2

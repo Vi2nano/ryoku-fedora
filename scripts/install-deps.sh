@@ -8,6 +8,7 @@ OPTIONAL_MANIFEST="${REPO_ROOT}/fedora/packages-optional.txt"
 
 DRY_RUN=0
 INCLUDE_OPTIONAL=0
+COPR_REPO="solopasha/hyprland"
 
 usage() {
   cat <<USAGE
@@ -64,6 +65,24 @@ if (( ${#PACKAGES[@]} == 0 )); then
   echo "No packages to install." >&2
   exit 1
 fi
+
+enable_copr() {
+  local cmd=(sudo "$DNF_BIN" copr enable -y "$COPR_REPO")
+
+  if ! "$DNF_BIN" copr --help >/dev/null 2>&1; then
+    echo "COPR support is unavailable for $DNF_BIN; skipping $COPR_REPO enablement."
+    return 0
+  fi
+
+  if (( DRY_RUN )); then
+    echo "[DRY-RUN] ${cmd[*]}"
+    return 0
+  fi
+
+  "${cmd[@]}"
+}
+
+enable_copr
 
 CMD=(sudo "$DNF_BIN" install -y "${PACKAGES[@]}")
 if (( DRY_RUN )); then
