@@ -85,6 +85,9 @@ Install the Ryoku Fedora layer to user-space XDG paths:
 scripts/install.sh
 ```
 
+The installer automatically enables the `solopasha/hyprland` COPR so `hyprland`
+and `hyprland-guiutils` are installed from the up-to-date community repo.
+
 Install with optional packages:
 
 ```bash
